@@ -143,9 +143,14 @@ struct job_t *jobs_getstoppedjob() {
 /* listjobs - Print the job list */
 void jobs_listjobs() {
     int i;
-
+    if(verbose){
+        printf("listing des jobs\n");
+    }
     for (i = 0; i < MAXJOBS; i++) {
         if (jobs[i].jb_pid != 0) {
+            if(verbose){
+                /*printf("jobs dans la list a l'index %i\n",i+1);*/
+            }
             printf("[%d] (%d) ", jobs[i].jb_jid, (int) jobs[i].jb_pid);
             switch (jobs[i].jb_state) {
             case BG:
@@ -158,9 +163,13 @@ void jobs_listjobs() {
                 printf("Stopped ");
                 break;
             default:
-                printf("listjobs: Internal error: job[%d].state=%d ", i, jobs[i].jb_state);
+                printf("listjobs: Internal error: job[%d].state=%d \n", i, jobs[i].jb_state);
             }
-            printf("%s", jobs[i].jb_cmdline);
+            printf("%s\n", jobs[i].jb_cmdline);
+        }else{
+            if (verbose) {
+                /*printf("pas de job dans la liste à l'index %i\n",i+1);*/
+            }
         }
     }
 }

@@ -69,6 +69,7 @@ struct job_t *treat_argv(char **argv) {
 void do_bg(char **argv) {
     struct job_t * jobp = NULL;
     sigset_t mask;
+    pid_t pid = jobp->jb_pid;
     
     sigemptyset(&mask);
     sigaddset(&mask, SIGCHLD);
@@ -78,10 +79,13 @@ void do_bg(char **argv) {
     
     if((jobp = treat_argv(argv)) != NULL){
         if (kill(+(jobp->jb_pid), SIGCONT) <0) {
-            unix_error("Kill error");
+            unix_error("Kill error\n");
         }
         jobp->jb_state = BG;
         sigprocmask(SIG_UNBLOCK, &mask, NULL);
+        if(verbose){
+            printf("processus [%d] en BG\n",pid);
+        }
     }else{
         /*erreur*/
         fprintf(stderr, "ERROR jobp = treat_argv(argv)) == NULL");
@@ -157,13 +161,20 @@ void do_stop(char **argv) {
     
     
     if((jobp = treat_argv(argv)) != NULL){
-        if (kill(+(jobp->jb_pid), SIGSTOP) <0) {
-            unix_error("Error : Kill do_stop");
+        if (kill(+(jobp->jb_pid), SIGTSTP) <0) { /*voir avec SIGCONT ou SIGSTOP ou SIGSTP*/
+            unix_error("Error : Kill do_stop\n");
+            exit(EXIT_FAILURE);
+        }else{
+            if (verbose) {
+                printf("signal stop ok\n");
+            }
         }
-        jobp->jb_state = FG;
+        jobp->jb_state = ST;
         pid = jobp->jb_pid;
         sigprocmask(SIG_UNBLOCK, &mask, NULL);
-        waitfg(pid);
+        if(verbose){
+            printf("processus [%d] stopper -> passage en BG\n",pid);
+        }
     }else{
         /*erreur*/
         fprintf(stderr, "ERROR jobp = treat_argv(argv)) == NULL");
@@ -182,9 +193,8 @@ void do_kill(char **argv) {
 
 /* do_exit - Execute the builtin exit command */
 void do_exit() {
-    /*printf("do_exit : To be implemented\n");*/
     if (verbose) {
-        printf("exit the mshell");
+        printf("exit the mshell\n");
     }
     exit(EXIT_SUCCESS);
 
@@ -193,7 +203,6 @@ void do_exit() {
 
 /* do_jobs - Execute the builtin fg command */
 void do_jobs() {
-    printf("do_jobs : To be implemented\n");
-    /*afficher la liste des jobs*/
+    jobs_listjobs();
     return;
 }
