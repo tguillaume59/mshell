@@ -182,7 +182,11 @@ void do_kill(char **argv) {
 
 /* do_exit - Execute the builtin exit command */
 void do_exit() {
-    printf("do_exit : To be implemented\n");
+    /*printf("do_exit : To be implemented\n");*/
+    if (verbose) {
+        printf("exit the mshell");
+    }
+    exit(EXIT_SUCCESS);
 
     return;
 }
@@ -190,6 +194,6 @@ void do_exit() {
 /* do_jobs - Execute the builtin fg command */
 void do_jobs() {
     printf("do_jobs : To be implemented\n");
-
+    /*afficher la liste des jobs*/
     return;
 }
