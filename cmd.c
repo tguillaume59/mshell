@@ -127,7 +127,7 @@ void do_fg(char **argv) {
     
     if((jobp = treat_argv(argv)) != NULL){
         if (kill(+(jobp->jb_pid), SIGCONT) <0) {
-            unix_error("Kill error");
+            unix_error("Error :  kill do_fg");
         }
         jobp->jb_state = FG;
         pid = jobp->jb_pid;
@@ -144,9 +144,32 @@ void do_fg(char **argv) {
 
 /* do_stop - Execute the builtin stop command */
 void do_stop(char **argv) {
-    printf("do_stop : To be implemented\n");
+    struct job_t *jobp = NULL;
     
-
+    pid_t pid;
+    sigset_t mask;
+    
+    sigemptyset(&mask);
+    sigaddset(&mask, SIGCHLD);
+    sigaddset(&mask, SIGTSTP);
+    sigaddset(&mask,SIGINT);
+    sigprocmask(SIG_BLOCK,&mask,NULL);
+    
+    
+    if((jobp = treat_argv(argv)) != NULL){
+        if (kill(+(jobp->jb_pid), SIGSTOP) <0) {
+            unix_error("Error : Kill do_stop");
+        }
+        jobp->jb_state = FG;
+        pid = jobp->jb_pid;
+        sigprocmask(SIG_UNBLOCK, &mask, NULL);
+        waitfg(pid);
+    }else{
+        /*erreur*/
+        fprintf(stderr, "ERROR jobp = treat_argv(argv)) == NULL");
+        exit(EXIT_FAILURE);
+    }
+    
     return;
 }
 

@@ -111,8 +111,6 @@ void sigint_handler(int sig) {
     if (verbose)
         printf("sigint_handler: entering\n");
 
-    printf("sigint_handler : To be implemented\n");
-
     if (verbose){
         printf("sigint_handler: exiting\n");
     }
